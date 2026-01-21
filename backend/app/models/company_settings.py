@@ -21,10 +21,10 @@ class CompanySettings(Base, TimestampMixin):
         index=True,
     )
 
-    # Feature flags: tüm kod tabanında var, varsayılan kapalı.
-    enable_income_tracking: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    enable_driver_job_entry: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
-    enable_advanced_reports: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    # Feature flags: varsayılan olarak tüm özellikler açık (müşteri kullanabilsin)
+    enable_income_tracking: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    enable_driver_job_entry: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    enable_advanced_reports: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     enable_future_modules: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
     company = relationship("Company", back_populates="settings")

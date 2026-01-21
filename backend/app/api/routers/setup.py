@@ -41,8 +41,14 @@ def setup(request: SetupRequest, db: Session = Depends(get_db)) -> dict:
     db.add(company)
     db.flush()
 
-    # Company settings oluştur (varsayılan kapalı)
-    settings_obj = CompanySettings(company_id=company.id)
+    # Company settings oluştur (tüm özellikler açık)
+    settings_obj = CompanySettings(
+        company_id=company.id,
+        enable_income_tracking=True,
+        enable_driver_job_entry=True,
+        enable_advanced_reports=True,
+        enable_future_modules=False,
+    )
     db.add(settings_obj)
 
     # Admin user oluştur

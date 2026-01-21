@@ -54,7 +54,13 @@ export function SignupPage() {
               className="input"
               placeholder="Firma adınız"
               value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setCompanyName(titleCase);
+              }}
               required
             />
           </div>
@@ -66,7 +72,13 @@ export function SignupPage() {
               className="input"
               placeholder="Adınız"
               value={adminName}
-              onChange={(e) => setAdminName(e.target.value)}
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setAdminName(titleCase);
+              }}
               required
             />
           </div>
@@ -85,13 +97,15 @@ export function SignupPage() {
           </div>
           <div style={{ marginBottom: 14 }}>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-              Şifre
+              Şifre <span style={{ color: "var(--color-muted)", fontSize: 11 }}>(En az 6 karakter)</span>
             </div>
             <input
               className="input"
               type="password"
+              placeholder="Şifre (min. 6 karakter)"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
+              minLength={6}
               required
             />
           </div>

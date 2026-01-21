@@ -100,7 +100,18 @@ export function DriverNewJobPage() {
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               İş tipi
             </div>
-            <input className="input" value={jobType} onChange={(e) => setJobType(e.target.value)} required />
+            <input 
+              className="input" 
+              value={jobType} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setJobType(titleCase);
+              }} 
+              required 
+            />
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
@@ -118,13 +129,35 @@ export function DriverNewJobPage() {
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               Nereden
             </div>
-            <input className="input" value={fromLocation} onChange={(e) => setFromLocation(e.target.value)} required />
+            <input 
+              className="input" 
+              value={fromLocation} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setFromLocation(titleCase);
+              }} 
+              required 
+            />
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               Nereye
             </div>
-            <input className="input" value={toLocation} onChange={(e) => setToLocation(e.target.value)} required />
+            <input 
+              className="input" 
+              value={toLocation} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setToLocation(titleCase);
+              }} 
+              required 
+            />
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
@@ -142,7 +175,17 @@ export function DriverNewJobPage() {
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               Açıklama (opsiyonel)
             </div>
-            <input className="input" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <input 
+              className="input" 
+              value={description} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setDescription(titleCase);
+              }} 
+            />
           </div>
           <button className="btn btn-primary" type="submit" disabled={busy} style={{ gridColumn: "1 / -1" }}>
             {busy ? "Kaydediliyor…" : "Kaydet"}

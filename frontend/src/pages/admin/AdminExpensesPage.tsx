@@ -132,7 +132,18 @@ export function AdminExpensesPage() {
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Açıklama (opsiyonel)</div>
-            <input className="input" placeholder="Açıklama" value={description} onChange={(e) => setDescription(e.target.value)} />
+            <input 
+              className="input" 
+              placeholder="Açıklama" 
+              value={description} 
+              onChange={(e) => {
+                const val = e.target.value;
+                const titleCase = val.split(" ").map(word => 
+                  word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(" ");
+                setDescription(titleCase);
+              }} 
+            />
           </div>
           <div>
             <div style={{ height: 20 }} />

@@ -53,8 +53,31 @@ def get_company_settings(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> CompanySettings | None:
-    # Ayar kaydı yoksa tüm özellikler kapalı kabul edilir.
-    return db.scalar(select(CompanySettings).where(CompanySettings.company_id == current_user.company_id))
+    settings = db.scalar(select(CompanySettings).where(CompanySettings.company_id == current_user.company_id))
+    
+    # Eğer settings yoksa veya gelir takibi kapalıysa, otomatik açık yap (müşteri kullanabilsin)
+    if settings:
+        if not settings.enable_income_tracking:
+            settings.enable_income_tracking = True
+        if not settings.enable_driver_job_entry:
+            settings.enable_driver_job_entry = True
+        if not settings.enable_advanced_reports:
+            settings.enable_advanced_reports = True
+        db.commit()
+    else:
+        # Settings yoksa oluştur (tüm özellikler açık)
+        settings = CompanySettings(
+            company_id=current_user.company_id,
+            enable_income_tracking=True,
+            enable_driver_job_entry=True,
+            enable_advanced_reports=True,
+            enable_future_modules=False,
+        )
+        db.add(settings)
+        db.commit()
+        db.refresh(settings)
+    
+    return settings
 
 
 # require_advanced_reports kaldırıldı - raporlar her şirkete açık

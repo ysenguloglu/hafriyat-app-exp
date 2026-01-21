@@ -48,8 +48,27 @@ export function AdminVehiclesPage() {
       <div className="card card-pad" style={{ marginBottom: 12 }}>
         <div className="h2">Yeni araç</div>
         <form onSubmit={create} className="row row-wrap">
-          <input className="input" style={{ flex: 1, minWidth: 160 }} placeholder="Plaka" value={plate} onChange={(e) => setPlate(e.target.value)} required />
-          <input className="input" style={{ flex: 1, minWidth: 160 }} placeholder="Tip (Kamyon vb.)" value={vehicleType} onChange={(e) => setVehicleType(e.target.value)} required />
+          <input 
+            className="input" 
+            style={{ flex: 1, minWidth: 160 }} 
+            placeholder="Plaka (örn: 34ABC123)" 
+            value={plate} 
+            onChange={(e) => setPlate(e.target.value.toUpperCase().replace(/\s/g, ""))} 
+            required 
+          />
+          <input 
+            className="input" 
+            style={{ flex: 1, minWidth: 160 }} 
+            placeholder="Tip (Kamyon vb.)" 
+            value={vehicleType} 
+            onChange={(e) => {
+              const val = e.target.value;
+              // Title case: İlk harf büyük, diğerleri küçük
+              const titleCase = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+              setVehicleType(titleCase);
+            }} 
+            required 
+          />
           <button className="btn btn-primary" type="submit" disabled={busy}>
             Ekle
           </button>
