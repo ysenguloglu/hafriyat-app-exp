@@ -1,32 +1,46 @@
 ## Hafriyat Firma Takip API (Backend)
 
-Bu klasör FastAPI + MySQL + SQLAlchemy tabanlı backend içindir.
+FastAPI + MySQL + SQLAlchemy tabanlı backend.
 
-### Kurulum (lokal)
-
-Sanal ortam aktifken:
+### Kurulum
 
 ```bash
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp env.example env
+# env dosyasını düzenle
 ```
 
-`env` dosyasındaki MySQL ayarlarını doldurun.
+### Veritabanı
 
-### Veritabanı şeması
+**Schema SQL ile:**
+```bash
+mysql -u root -p hafriyat < schema.sql
+```
 
-- Ham MySQL şeması: `schema.sql`
-- SQLAlchemy modelleri: `app/models/`
-
-### Alembic (önerilen)
-
+**Alembic ile (önerilen):**
 ```bash
 alembic revision --autogenerate -m "init"
 alembic upgrade head
 ```
+
+### Örnek Veri (Demo için)
+
+```bash
+python -m app.db.seed
+```
+
+Bu script:
+- 1 firma + admin kullanıcı (`05551234567` / `admin123`)
+- 2 şoför (`05551234568`, `05551234569` / `sifre123`)
+- 3 araç (ID: 1, 2, 3)
+- Son 30 gün için örnek iş ve gider kayıtları
 
 ### Çalıştırma
 
 ```bash
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
+
+API Docs: http://localhost:8000/docs
