@@ -15,6 +15,16 @@ export function AdminJobsPage() {
   const [tripCount, setTripCount] = React.useState("1");
   const [incomeAmount, setIncomeAmount] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+  const [editDate, setEditDate] = React.useState("");
+  const [editVehicleId, setEditVehicleId] = React.useState("");
+  const [editDriverId, setEditDriverId] = React.useState("");
+  const [editJobType, setEditJobType] = React.useState("");
+  const [editFromLocation, setEditFromLocation] = React.useState("");
+  const [editToLocation, setEditToLocation] = React.useState("");
+  const [editTripCount, setEditTripCount] = React.useState("1");
+  const [editIncomeAmount, setEditIncomeAmount] = React.useState("");
+  const [editDescription, setEditDescription] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -82,6 +92,57 @@ export function AdminJobsPage() {
       await loadJobs();
     } catch (e: any) {
       setError(e?.message ?? "İş kaydı oluşturulamadı");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEdit = (j: Job) => {
+    setEditingId(j.id);
+    setEditDate(j.date);
+    setEditVehicleId(String(j.vehicle_id));
+    setEditDriverId(String(j.driver_id));
+    setEditJobType(j.job_type);
+    setEditFromLocation(j.from_location);
+    setEditToLocation(j.to_location);
+    setEditTripCount(String(j.trip_count));
+    setEditIncomeAmount(j.income_amount || "");
+    setEditDescription(j.description || "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditDate("");
+    setEditVehicleId("");
+    setEditDriverId("");
+    setEditJobType("");
+    setEditFromLocation("");
+    setEditToLocation("");
+    setEditTripCount("1");
+    setEditIncomeAmount("");
+    setEditDescription("");
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await adminApi.jobs.update(editingId, {
+        date: editDate,
+        vehicle_id: Number(editVehicleId),
+        driver_id: Number(editDriverId),
+        job_type: editJobType,
+        from_location: editFromLocation,
+        to_location: editToLocation,
+        trip_count: Number(editTripCount),
+        income_amount: editIncomeAmount.trim() ? Number(editIncomeAmount) : null,
+        description: editDescription.trim() ? editDescription : null
+      });
+      cancelEdit();
+      await loadJobs();
+    } catch (e: any) {
+      setError(e?.message ?? "İş güncellenemedi");
     } finally {
       setBusy(false);
     }
@@ -257,6 +318,144 @@ export function AdminJobsPage() {
           {items.map((j) => {
             const vehicle = vehicles.find(v => v.id === j.vehicle_id);
             const driver = drivers.find(d => d.id === j.driver_id);
+            
+            if (editingId === j.id) {
+              return (
+                <div key={j.id} className="card card-pad">
+                  <div className="row" style={{ marginBottom: 10 }}>
+                    <div className="h2">Düzenle</div>
+                    <div className="spacer" />
+                    <button className="btn" onClick={cancelEdit} disabled={busy}>
+                      İptal
+                    </button>
+                  </div>
+                  <div className="grid grid-2">
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Tarih</div>
+                      <input className="input" type="date" value={editDate} onChange={(e) => setEditDate(e.target.value)} required />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Araç</div>
+                      <select
+                        className="input"
+                        value={editVehicleId}
+                        onChange={(e) => setEditVehicleId(e.target.value)}
+                        required
+                      >
+                        <option value="">Seçiniz...</option>
+                        {vehicles.map(v => (
+                          <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Şoför</div>
+                      <select
+                        className="input"
+                        value={editDriverId}
+                        onChange={(e) => setEditDriverId(e.target.value)}
+                        required
+                      >
+                        <option value="">Seçiniz...</option>
+                        {drivers.map(d => (
+                          <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>İş Tipi</div>
+                      <input 
+                        className="input" 
+                        placeholder="Örn: Hafriyat" 
+                        value={editJobType} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const titleCase = val.split(" ").map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                          ).join(" ");
+                          setEditJobType(titleCase);
+                        }} 
+                        required 
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Nereden</div>
+                      <input 
+                        className="input" 
+                        placeholder="Başlangıç lokasyonu" 
+                        value={editFromLocation} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const titleCase = val.split(" ").map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                          ).join(" ");
+                          setEditFromLocation(titleCase);
+                        }} 
+                        required 
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Nereye</div>
+                      <input 
+                        className="input" 
+                        placeholder="Varış lokasyonu" 
+                        value={editToLocation} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const titleCase = val.split(" ").map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                          ).join(" ");
+                          setEditToLocation(titleCase);
+                        }} 
+                        required 
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Sefer Sayısı</div>
+                      <input
+                        className="input"
+                        inputMode="numeric"
+                        value={editTripCount}
+                        onChange={(e) => setEditTripCount(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Gelir (opsiyonel)</div>
+                      <input
+                        className="input"
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        value={editIncomeAmount}
+                        onChange={(e) => setEditIncomeAmount(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Açıklama (opsiyonel)</div>
+                      <input 
+                        className="input" 
+                        placeholder="Açıklama" 
+                        value={editDescription} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const titleCase = val.split(" ").map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                          ).join(" ");
+                          setEditDescription(titleCase);
+                        }} 
+                      />
+                    </div>
+                    <div>
+                      <div style={{ height: 20 }} />
+                      <button className="btn btn-primary" onClick={saveEdit} disabled={busy}>
+                        Kaydet
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            
             return (
               <div key={j.id} className="card card-pad">
                 <div className="row">
@@ -273,7 +472,12 @@ export function AdminJobsPage() {
                     {j.description ? <div className="muted">{j.description}</div> : null}
                   </div>
                   <div className="spacer" />
-                  <div className="muted">{j.income_amount === null ? "Gelir: —" : `Gelir: ${Number(j.income_amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+                    <div className="muted">{j.income_amount === null ? "Gelir: —" : `Gelir: ${Number(j.income_amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}</div>
+                    <button className="btn" onClick={() => startEdit(j)} disabled={busy}>
+                      Düzenle
+                    </button>
+                  </div>
                 </div>
               </div>
             );

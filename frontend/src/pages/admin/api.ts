@@ -66,20 +66,32 @@ export const adminApi = {
   vehicles: {
     list: () => apiFetch<Vehicle[]>("/admin/vehicles"),
     create: (p: { plate: string; vehicle_type: string }) =>
-      apiFetch<Vehicle>("/admin/vehicles", { method: "POST", body: JSON.stringify(p) })
+      apiFetch<Vehicle>("/admin/vehicles", { method: "POST", body: JSON.stringify(p) }),
+    update: (id: number, p: { plate?: string; vehicle_type?: string; is_active?: boolean }) =>
+      apiFetch<Vehicle>(`/admin/vehicles/${id}`, { method: "PUT", body: JSON.stringify(p) }),
+    delete: (id: number) =>
+      apiFetch<Vehicle>(`/admin/vehicles/${id}`, { method: "PUT", body: JSON.stringify({ is_active: false }) })
   },
   drivers: {
     list: () => apiFetch<Driver[]>("/admin/drivers"),
     create: (p: { name: string; phone: string; password: string }) =>
-      apiFetch<Driver>("/admin/drivers", { method: "POST", body: JSON.stringify(p) })
+      apiFetch<Driver>("/admin/drivers", { method: "POST", body: JSON.stringify(p) }),
+    update: (id: number, p: { name?: string; phone?: string; password?: string; is_active?: boolean }) =>
+      apiFetch<Driver>(`/admin/drivers/${id}`, { method: "PUT", body: JSON.stringify(p) }),
+    delete: (id: number) =>
+      apiFetch<Driver>(`/admin/drivers/${id}`, { method: "PUT", body: JSON.stringify({ is_active: false }) })
   },
   jobs: {
     list: () => apiFetch<Job[]>("/jobs"),
-    create: (p: any) => apiFetch<Job>("/jobs", { method: "POST", body: JSON.stringify(p) })
+    create: (p: any) => apiFetch<Job>("/jobs", { method: "POST", body: JSON.stringify(p) }),
+    update: (id: number, p: any) =>
+      apiFetch<Job>(`/jobs/${id}`, { method: "PUT", body: JSON.stringify(p) })
   },
   expenses: {
     list: () => apiFetch<Expense[]>("/admin/expenses"),
-    create: (p: any) => apiFetch<Expense>("/admin/expenses", { method: "POST", body: JSON.stringify(p) })
+    create: (p: any) => apiFetch<Expense>("/admin/expenses", { method: "POST", body: JSON.stringify(p) }),
+    update: (id: number, p: any) =>
+      apiFetch<Expense>(`/admin/expenses/${id}`, { method: "PUT", body: JSON.stringify(p) })
   },
   dashboard: (p: { start_date: string; end_date: string }) =>
     apiFetch<Dashboard>(`/admin/dashboard?start_date=${p.start_date}&end_date=${p.end_date}`),

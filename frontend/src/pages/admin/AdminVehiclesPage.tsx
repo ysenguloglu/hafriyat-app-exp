@@ -5,6 +5,9 @@ export function AdminVehiclesPage() {
   const [items, setItems] = React.useState<Vehicle[]>([]);
   const [plate, setPlate] = React.useState("");
   const [vehicleType, setVehicleType] = React.useState("");
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+  const [editPlate, setEditPlate] = React.useState("");
+  const [editVehicleType, setEditVehicleType] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -35,6 +38,52 @@ export function AdminVehiclesPage() {
       await load();
     } catch (e: any) {
       setError(e?.message ?? "Araç eklenemedi");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEdit = (v: Vehicle) => {
+    setEditingId(v.id);
+    setEditPlate(v.plate);
+    setEditVehicleType(v.vehicle_type);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditPlate("");
+    setEditVehicleType("");
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await adminApi.vehicles.update(editingId, {
+        plate: editPlate,
+        vehicle_type: editVehicleType
+      });
+      cancelEdit();
+      await load();
+    } catch (e: any) {
+      setError(e?.message ?? "Araç güncellenemedi");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleActive = async (id: number, currentStatus: boolean) => {
+    if (!confirm(currentStatus ? "Bu aracı pasif yapmak istediğinize emin misiniz?" : "Bu aracı aktif yapmak istediğinize emin misiniz?")) {
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await adminApi.vehicles.update(id, { is_active: !currentStatus });
+      await load();
+    } catch (e: any) {
+      setError(e?.message ?? "Araç durumu değiştirilemedi");
     } finally {
       setBusy(false);
     }
@@ -86,14 +135,60 @@ export function AdminVehiclesPage() {
         <div className="grid">
           {items.map((v) => (
             <div key={v.id} className="card card-pad">
-              <div className="row">
+              {editingId === v.id ? (
                 <div>
-                  <div className="h2">{v.plate}</div>
-                  <div className="muted">{v.vehicle_type}</div>
+                  <div className="row" style={{ marginBottom: 10 }}>
+                    <div className="h2">Düzenle</div>
+                    <div className="spacer" />
+                    <button className="btn" onClick={cancelEdit} disabled={busy}>
+                      İptal
+                    </button>
+                  </div>
+                  <div className="grid grid-2" style={{ marginBottom: 10 }}>
+                    <input
+                      className="input"
+                      placeholder="Plaka"
+                      value={editPlate}
+                      onChange={(e) => setEditPlate(e.target.value.toUpperCase().replace(/\s/g, ""))}
+                    />
+                    <input
+                      className="input"
+                      placeholder="Tip"
+                      value={editVehicleType}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const titleCase = val.charAt(0).toUpperCase() + val.slice(1).toLowerCase();
+                        setEditVehicleType(titleCase);
+                      }}
+                    />
+                  </div>
+                  <button className="btn btn-primary" onClick={saveEdit} disabled={busy}>
+                    Kaydet
+                  </button>
                 </div>
-                <div className="spacer" />
-                <div className="muted">{v.is_active ? "Aktif" : "Pasif"}</div>
-              </div>
+              ) : (
+                <div className="row">
+                  <div>
+                    <div className="h2">{v.plate}</div>
+                    <div className="muted">{v.vehicle_type}</div>
+                  </div>
+                  <div className="spacer" />
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div className="muted">{v.is_active ? "Aktif" : "Pasif"}</div>
+                    <button className="btn" onClick={() => startEdit(v)} disabled={busy}>
+                      Düzenle
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => toggleActive(v.id, v.is_active)}
+                      disabled={busy}
+                      style={{ color: v.is_active ? "var(--color-danger)" : "var(--color-primary)" }}
+                    >
+                      {v.is_active ? "Pasif Yap" : "Aktif Yap"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {!items.length && !busy ? <div className="muted">Kayıt yok.</div> : null}

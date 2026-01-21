@@ -6,6 +6,10 @@ export function AdminDriversPage() {
   const [name, setName] = React.useState("");
   const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+  const [editName, setEditName] = React.useState("");
+  const [editPhone, setEditPhone] = React.useState("");
+  const [editPassword, setEditPassword] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -69,6 +73,63 @@ export function AdminDriversPage() {
       await load();
     } catch (e: any) {
       setError(e?.message ?? "Şoför eklenemedi");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEdit = (d: Driver) => {
+    setEditingId(d.id);
+    setEditName(d.name);
+    setEditPhone(d.phone);
+    setEditPassword("");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditName("");
+    setEditPhone("");
+    setEditPassword("");
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const updateData: any = {
+        name: editName.trim(),
+        phone: editPhone.trim()
+      };
+      if (editPassword.trim()) {
+        if (editPassword.length < 6) {
+          setError("Şifre en az 6 karakter olmalıdır");
+          setBusy(false);
+          return;
+        }
+        updateData.password = editPassword;
+      }
+      await adminApi.drivers.update(editingId, updateData);
+      cancelEdit();
+      await load();
+    } catch (e: any) {
+      setError(e?.message ?? "Şoför güncellenemedi");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleActive = async (id: number, currentStatus: boolean) => {
+    if (!confirm(currentStatus ? "Bu şoförü pasif yapmak istediğinize emin misiniz?" : "Bu şoförü aktif yapmak istediğinize emin misiniz?")) {
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await adminApi.drivers.update(id, { is_active: !currentStatus });
+      await load();
+    } catch (e: any) {
+      setError(e?.message ?? "Şoför durumu değiştirilemedi");
     } finally {
       setBusy(false);
     }
@@ -143,14 +204,70 @@ export function AdminDriversPage() {
         <div className="grid">
           {items.map((d) => (
             <div key={d.id} className="card card-pad">
-              <div className="row">
+              {editingId === d.id ? (
                 <div>
-                  <div className="h2">{d.name}</div>
-                  <div className="muted">{d.phone}</div>
+                  <div className="row" style={{ marginBottom: 10 }}>
+                    <div className="h2">Düzenle</div>
+                    <div className="spacer" />
+                    <button className="btn" onClick={cancelEdit} disabled={busy}>
+                      İptal
+                    </button>
+                  </div>
+                  <div className="grid grid-2" style={{ marginBottom: 10 }}>
+                    <input
+                      className="input"
+                      placeholder="Ad Soyad"
+                      value={editName}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        const titleCase = val.split(" ").map(word => 
+                          word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                        ).join(" ");
+                        setEditName(titleCase);
+                      }}
+                    />
+                    <input
+                      className="input"
+                      placeholder="Telefon"
+                      value={editPhone}
+                      onChange={(e) => setEditPhone(e.target.value)}
+                    />
+                    <input
+                      className="input"
+                      type="password"
+                      placeholder="Yeni şifre (boş bırakırsanız değişmez)"
+                      value={editPassword}
+                      onChange={(e) => setEditPassword(e.target.value)}
+                    />
+                    <div />
+                  </div>
+                  <button className="btn btn-primary" onClick={saveEdit} disabled={busy}>
+                    Kaydet
+                  </button>
                 </div>
-                <div className="spacer" />
-                <div className="muted">{d.is_active ? "Aktif" : "Pasif"}</div>
-              </div>
+              ) : (
+                <div className="row">
+                  <div>
+                    <div className="h2">{d.name}</div>
+                    <div className="muted">{d.phone}</div>
+                  </div>
+                  <div className="spacer" />
+                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                    <div className="muted">{d.is_active ? "Aktif" : "Pasif"}</div>
+                    <button className="btn" onClick={() => startEdit(d)} disabled={busy}>
+                      Düzenle
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => toggleActive(d.id, d.is_active)}
+                      disabled={busy}
+                      style={{ color: d.is_active ? "var(--color-danger)" : "var(--color-primary)" }}
+                    >
+                      {d.is_active ? "Pasif Yap" : "Aktif Yap"}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
           {!items.length && !busy ? <div className="muted">Kayıt yok.</div> : null}

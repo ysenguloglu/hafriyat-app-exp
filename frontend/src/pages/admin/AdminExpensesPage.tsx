@@ -12,6 +12,12 @@ export function AdminExpensesPage() {
   const [expenseType, setExpenseType] = React.useState("");
   const [amount, setAmount] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [editingId, setEditingId] = React.useState<number | null>(null);
+  const [editDate, setEditDate] = React.useState("");
+  const [editVehicleId, setEditVehicleId] = React.useState("");
+  const [editExpenseType, setEditExpenseType] = React.useState("");
+  const [editAmount, setEditAmount] = React.useState("");
+  const [editDescription, setEditDescription] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -61,6 +67,45 @@ export function AdminExpensesPage() {
       await loadExpenses();
     } catch (e: any) {
       setError(e?.message ?? "Gider eklenemedi");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const startEdit = (x: Expense) => {
+    setEditingId(x.id);
+    setEditDate(x.date);
+    setEditVehicleId(String(x.vehicle_id));
+    setEditExpenseType(x.expense_type);
+    setEditAmount(String(x.amount));
+    setEditDescription(x.description || "");
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditDate("");
+    setEditVehicleId("");
+    setEditExpenseType("");
+    setEditAmount("");
+    setEditDescription("");
+  };
+
+  const saveEdit = async () => {
+    if (!editingId) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await adminApi.expenses.update(editingId, {
+        date: editDate,
+        vehicle_id: Number(editVehicleId),
+        expense_type: editExpenseType,
+        amount: Number(editAmount),
+        description: editDescription.trim() ? editDescription : null
+      });
+      cancelEdit();
+      await loadExpenses();
+    } catch (e: any) {
+      setError(e?.message ?? "Gider güncellenemedi");
     } finally {
       setBusy(false);
     }
@@ -165,6 +210,87 @@ export function AdminExpensesPage() {
         <div className="grid">
           {items.map((x) => {
             const vehicle = vehicles.find(v => v.id === x.vehicle_id);
+            
+            if (editingId === x.id) {
+              return (
+                <div key={x.id} className="card card-pad">
+                  <div className="row" style={{ marginBottom: 10 }}>
+                    <div className="h2">Düzenle</div>
+                    <div className="spacer" />
+                    <button className="btn" onClick={cancelEdit} disabled={busy}>
+                      İptal
+                    </button>
+                  </div>
+                  <div className="grid grid-2">
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Tarih</div>
+                      <input className="input" type="date" value={editDate} onChange={(e) => setEditDate(e.target.value)} required />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Araç</div>
+                      <select
+                        className="input"
+                        value={editVehicleId}
+                        onChange={(e) => setEditVehicleId(e.target.value)}
+                        required
+                      >
+                        <option value="">Seçiniz...</option>
+                        {vehicles.map(v => (
+                          <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Masraf Tipi</div>
+                      <select
+                        className="input"
+                        value={editExpenseType}
+                        onChange={(e) => setEditExpenseType(e.target.value)}
+                        required
+                      >
+                        <option value="">Seçiniz...</option>
+                        {EXPENSE_TYPES.map(t => (
+                          <option key={t} value={t}>{t}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Tutar</div>
+                      <input
+                        className="input"
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        value={editAmount}
+                        onChange={(e) => setEditAmount(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Açıklama (opsiyonel)</div>
+                      <input 
+                        className="input" 
+                        placeholder="Açıklama" 
+                        value={editDescription} 
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          const titleCase = val.split(" ").map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                          ).join(" ");
+                          setEditDescription(titleCase);
+                        }} 
+                      />
+                    </div>
+                    <div>
+                      <div style={{ height: 20 }} />
+                      <button className="btn btn-primary" onClick={saveEdit} disabled={busy}>
+                        Kaydet
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            }
+            
             return (
               <div key={x.id} className="card card-pad">
                 <div className="row">
@@ -176,7 +302,12 @@ export function AdminExpensesPage() {
                     {x.description ? <div className="muted">{x.description}</div> : null}
                   </div>
                   <div className="spacer" />
-                  <div className="h2">{Number(x.amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
+                    <div className="h2">{Number(x.amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</div>
+                    <button className="btn" onClick={() => startEdit(x)} disabled={busy}>
+                      Düzenle
+                    </button>
+                  </div>
                 </div>
               </div>
             );
