@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { DateRangeBar, type DateRange } from "../../components/DateRangeBar";
 import { adminApi } from "./api";
 
@@ -49,6 +50,31 @@ export function AdminDashboardPage() {
         </button>
         <div className="spacer" />
         {error ? <div className="muted">{error}</div> : null}
+      </div>
+
+      <div style={{ height: 12 }} />
+
+      <div className="card card-pad" style={{ marginBottom: 12, backgroundColor: "var(--color-bg-secondary)" }}>
+        <div className="h2" style={{ marginBottom: 10 }}>Başlamak İçin</div>
+        <div className="muted" style={{ marginBottom: 12, fontSize: 14 }}>
+          Önce araç ve şoför ekleyin, sonra iş ve gider kayıtları girebilirsiniz.
+        </div>
+        <div className="grid grid-2">
+          <Link to="/admin/vehicles" style={{ textDecoration: "none" }}>
+            <div className="card card-pad" style={{ cursor: "pointer", textAlign: "center", border: "2px solid var(--color-primary)" }}>
+              <div className="h2">🚗</div>
+              <div style={{ fontWeight: "bold", marginTop: 4 }}>Araçlar</div>
+              <div className="muted" style={{ fontSize: 12 }}>Araç ekle</div>
+            </div>
+          </Link>
+          <Link to="/admin/drivers" style={{ textDecoration: "none" }}>
+            <div className="card card-pad" style={{ cursor: "pointer", textAlign: "center", border: "2px solid var(--color-primary)" }}>
+              <div className="h2">👤</div>
+              <div style={{ fontWeight: "bold", marginTop: 4 }}>Şoförler</div>
+              <div className="muted" style={{ fontSize: 12 }}>Şoför ekle</div>
+            </div>
+          </Link>
+        </div>
       </div>
 
       <div style={{ height: 12 }} />

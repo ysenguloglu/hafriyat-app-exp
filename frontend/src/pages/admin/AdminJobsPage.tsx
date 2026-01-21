@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { adminApi, type Job, type Vehicle, type Driver } from "./api";
 
 export function AdminJobsPage() {
@@ -100,31 +101,57 @@ export function AdminJobsPage() {
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Araç</div>
-            <select
-              className="input"
-              value={vehicleId}
-              onChange={(e) => setVehicleId(e.target.value)}
-              required
-            >
-              <option value="">Seçiniz...</option>
-              {vehicles.map(v => (
-                <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
-              ))}
-            </select>
+            {vehicles.length === 0 ? (
+              <div>
+                <select className="input" disabled>
+                  <option>Araç yok - Önce araç ekleyin</option>
+                </select>
+                <div style={{ marginTop: 6 }}>
+                  <Link to="/admin/vehicles" style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: 12 }}>
+                    → Araçlar sayfasına git
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <select
+                className="input"
+                value={vehicleId}
+                onChange={(e) => setVehicleId(e.target.value)}
+                required
+              >
+                <option value="">Seçiniz...</option>
+                {vehicles.map(v => (
+                  <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
+                ))}
+              </select>
+            )}
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Şoför</div>
-            <select
-              className="input"
-              value={driverId}
-              onChange={(e) => setDriverId(e.target.value)}
-              required
-            >
-              <option value="">Seçiniz...</option>
-              {drivers.map(d => (
-                <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
-              ))}
-            </select>
+            {drivers.length === 0 ? (
+              <div>
+                <select className="input" disabled>
+                  <option>Şoför yok - Önce şoför ekleyin</option>
+                </select>
+                <div style={{ marginTop: 6 }}>
+                  <Link to="/admin/drivers" style={{ color: "var(--color-primary)", textDecoration: "none", fontSize: 12 }}>
+                    → Şoförler sayfasına git
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <select
+                className="input"
+                value={driverId}
+                onChange={(e) => setDriverId(e.target.value)}
+                required
+              >
+                <option value="">Seçiniz...</option>
+                {drivers.map(d => (
+                  <option key={d.id} value={d.id}>{d.name} ({d.phone})</option>
+                ))}
+              </select>
+            )}
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>İş Tipi</div>

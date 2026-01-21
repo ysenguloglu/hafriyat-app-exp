@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { driverApi } from "./api";
 import { adminApi, type Vehicle } from "../admin/api";
 
@@ -76,17 +76,25 @@ export function DriverNewJobPage() {
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               Araç
             </div>
-            <select
-              className="input"
-              value={vehicleId}
-              onChange={(e) => setVehicleId(e.target.value)}
-              required
-            >
-              <option value="">Seçiniz...</option>
-              {vehicles.map(v => (
-                <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
-              ))}
-            </select>
+            {vehicles.length === 0 ? (
+              <div>
+                <select className="input" disabled>
+                  <option>Araç yok - Admin araç eklemeli</option>
+                </select>
+              </div>
+            ) : (
+              <select
+                className="input"
+                value={vehicleId}
+                onChange={(e) => setVehicleId(e.target.value)}
+                required
+              >
+                <option value="">Seçiniz...</option>
+                {vehicles.map(v => (
+                  <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
+                ))}
+              </select>
+            )}
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>

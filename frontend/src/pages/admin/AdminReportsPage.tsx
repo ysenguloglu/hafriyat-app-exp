@@ -84,9 +84,9 @@ export function AdminReportsPage() {
                 </div>
                 <div className="spacer" />
                 <div style={{ textAlign: "right" }}>
-                  <div className="muted">Gider: {r.total_expense}</div>
-                  <div className="muted">Gelir: {r.total_income ?? "—"}</div>
-                  <div className="h2">Net: {r.net_profit ?? "—"}</div>
+                  <div className="muted">Gider: {Number(r.total_expense).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</div>
+                  <div className="muted">Gelir: {r.total_income ? Number(r.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}</div>
+                  <div className="h2">Net: {r.net_profit ? Number(r.net_profit).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}</div>
                 </div>
               </div>
             </div>
@@ -96,7 +96,8 @@ export function AdminReportsPage() {
       </div>
 
       <div className="card card-pad" style={{ marginBottom: 12 }}>
-        <div className="h2">Şoför bazlı iş özeti</div>
+        <div className="h2">Şoför Bazlı Çalışma Raporu</div>
+        <div className="muted" style={{ fontSize: 12, marginBottom: 10 }}>Her şoförün ne kadar iş yaptığını ve toplam gelirini görüntüleyin</div>
         <div className="grid">
           {drivers.map((r) => (
             <div key={r.driver_id} className="card card-pad">
@@ -107,9 +108,9 @@ export function AdminReportsPage() {
                 </div>
                 <div className="spacer" />
                 <div style={{ textAlign: "right" }}>
-                  <div className="muted">İş: {r.job_count}</div>
-                  <div className="muted">Sefer: {r.total_trip_count}</div>
-                  <div className="muted">Gelir: {r.total_income ?? "—"}</div>
+                  <div className="muted">İş Sayısı: {r.job_count}</div>
+                  <div className="muted">Toplam Sefer: {r.total_trip_count}</div>
+                  <div className="h2">Toplam Gelir: {r.total_income ? Number(r.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}</div>
                 </div>
               </div>
             </div>
@@ -132,9 +133,9 @@ export function AdminReportsPage() {
                 </div>
                 <div className="spacer" />
                 <div style={{ textAlign: "right" }}>
-                  <div className="muted">Gider: {r.total_expense}</div>
-                  <div className="muted">Gelir: {r.total_income ?? "—"}</div>
-                  <div className="h2">Net: {r.net_profit ?? "—"}</div>
+                  <div className="muted">Gider: {Number(r.total_expense).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}</div>
+                  <div className="muted">Gelir: {r.total_income ? Number(r.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}</div>
+                  <div className="h2">Net: {r.net_profit ? Number(r.net_profit).toLocaleString("tr-TR", { style: "currency", currency: "TRY" }) : "—"}</div>
                 </div>
               </div>
             </div>
