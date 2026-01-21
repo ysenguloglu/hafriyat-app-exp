@@ -16,25 +16,13 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/login", response_model=Token)
 def login(payload: LoginRequest, db: Session = Depends(get_db)) -> Token:
-    # Multi-tenant güvenliği: aynı telefon birden fazla firmada olabilir.
-    stmt = select(User).where(User.phone == payload.phone, User.is_active.is_(True))
-    if payload.company_id is not None:
-        stmt = stmt.where(User.company_id == payload.company_id)
-
-    candidates = db.scalars(stmt).all()
-    if not candidates:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect phone or password")
-
-    if len(candidates) > 1 and payload.company_id is None:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="company_id is required for this phone number",
-        )
-
-    user = candidates[0]
+    # Telefon numarasına göre kullanıcı bul (aynı telefon birden fazla firmada varsa ilkini al)
+    user = db.scalar(select(User).where(User.phone == payload.phone, User.is_active.is_(True)))
+    if not user:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Telefon veya şifre hatalı")
 
     if not verify_password(payload.password, user.password_hash):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect phone or password")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Telefon veya şifre hatalı")
 
     token = create_access_token(subject=str(user.id), company_id=user.company_id, role=user.role)
     return Token(access_token=token)

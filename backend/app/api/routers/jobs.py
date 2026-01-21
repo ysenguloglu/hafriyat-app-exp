@@ -48,7 +48,7 @@ def get_job(
         stmt = stmt.where(Job.driver_id == current_user.id)
     job = db.scalar(stmt)
     if not job:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="İş bulunamadı")
 
     enable_income = bool(settings.enable_income_tracking) if settings else False
     return _apply_income_visibility(job, enable_income_tracking=enable_income)
@@ -65,17 +65,17 @@ def create_job(
     enable_driver_entry = bool(settings.enable_driver_job_entry) if settings else False
 
     if payload.income_amount is not None and not enable_income:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Income tracking is disabled for company")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Gelir takibi bu firma için kapalı")
 
     # Driver sadece kendi adına ve ayar açık ise kayıt girebilir.
     if current_user.role == "driver":
         if not enable_driver_entry:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Driver job entry is disabled for company")
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Şoför iş girişi bu firma için kapalı")
         driver_id = current_user.id
     else:
         # Admin: driver_id zorunlu
         if payload.driver_id is None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="driver_id is required")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Şoför ID gereklidir")
         driver_id = payload.driver_id
 
     # Vehicle company kontrolü
@@ -86,7 +86,7 @@ def create_job(
         )
     )
     if not vehicle:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid vehicle_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz araç ID")
 
     # Driver company + role kontrolü
     driver = db.scalar(
@@ -98,7 +98,7 @@ def create_job(
         )
     )
     if not driver:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid driver_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz şoför ID")
 
     job = Job(
         company_id=current_user.company_id,
@@ -130,17 +130,17 @@ def update_job(
 
     job = db.scalar(select(Job).where(Job.id == job_id, Job.company_id == admin_user.company_id))
     if not job:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Job not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="İş bulunamadı")
 
     if payload.income_amount is not None and not enable_income:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Income tracking is disabled for company")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Gelir takibi bu firma için kapalı")
 
     if payload.vehicle_id is not None:
         vehicle = db.scalar(
             select(Vehicle).where(Vehicle.id == payload.vehicle_id, Vehicle.company_id == admin_user.company_id)
         )
         if not vehicle:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid vehicle_id")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz araç ID")
         job.vehicle_id = payload.vehicle_id
 
     if payload.driver_id is not None:
@@ -153,7 +153,7 @@ def update_job(
             )
         )
         if not driver:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid driver_id")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz şoför ID")
         job.driver_id = payload.driver_id
 
     if payload.date is not None:

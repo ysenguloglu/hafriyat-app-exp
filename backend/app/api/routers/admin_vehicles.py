@@ -45,7 +45,7 @@ def create_vehicle(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vehicle plate already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Bu plaka zaten kayıtlı")
     db.refresh(vehicle)
     return vehicle
 
@@ -60,7 +60,7 @@ def get_vehicle(
         select(Vehicle).where(Vehicle.id == vehicle_id, Vehicle.company_id == current_user.company_id)
     )
     if not vehicle:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehicle not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Araç bulunamadı")
     return vehicle
 
 
@@ -75,7 +75,7 @@ def update_vehicle(
         select(Vehicle).where(Vehicle.id == vehicle_id, Vehicle.company_id == current_user.company_id)
     )
     if not vehicle:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Vehicle not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Araç bulunamadı")
 
     if payload.plate is not None:
         vehicle.plate = payload.plate.strip()
@@ -88,7 +88,7 @@ def update_vehicle(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Vehicle plate already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Bu plaka zaten kayıtlı")
     db.refresh(vehicle)
     return vehicle
 

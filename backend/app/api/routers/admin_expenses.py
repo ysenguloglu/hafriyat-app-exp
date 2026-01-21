@@ -38,7 +38,7 @@ def create_expense(
         select(Vehicle).where(Vehicle.id == payload.vehicle_id, Vehicle.company_id == current_user.company_id)
     )
     if not vehicle:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid vehicle_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz araç ID")
 
     exp = Expense(
         company_id=current_user.company_id,
@@ -64,7 +64,7 @@ def get_expense(
         select(Expense).where(Expense.id == expense_id, Expense.company_id == current_user.company_id)
     )
     if not exp:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Expense not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Gider bulunamadı")
     return exp
 
 
@@ -79,14 +79,14 @@ def update_expense(
         select(Expense).where(Expense.id == expense_id, Expense.company_id == current_user.company_id)
     )
     if not exp:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Expense not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Gider bulunamadı")
 
     if payload.vehicle_id is not None:
         vehicle = db.scalar(
             select(Vehicle).where(Vehicle.id == payload.vehicle_id, Vehicle.company_id == current_user.company_id)
         )
         if not vehicle:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid vehicle_id")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz araç ID")
         exp.vehicle_id = payload.vehicle_id
 
     if payload.date is not None:

@@ -50,7 +50,7 @@ def create_driver(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Driver phone already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Bu telefon numarası zaten kayıtlı")
     db.refresh(driver)
     return driver
 
@@ -69,7 +69,7 @@ def get_driver(
         )
     )
     if not driver:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Driver not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Şoför bulunamadı")
     return driver
 
 
@@ -88,7 +88,7 @@ def update_driver(
         )
     )
     if not driver:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Driver not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Şoför bulunamadı")
 
     if payload.name is not None:
         driver.name = payload.name.strip()
@@ -103,7 +103,7 @@ def update_driver(
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Driver phone already exists")
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Bu telefon numarası zaten kayıtlı")
     db.refresh(driver)
     return driver
 

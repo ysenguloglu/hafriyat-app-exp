@@ -7,7 +7,6 @@ export function LoginPage() {
   const nav = useNavigate();
   const [phone, setPhone] = React.useState("");
   const [password, setPassword] = React.useState("");
-  const [companyId, setCompanyId] = React.useState<string>("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -22,8 +21,7 @@ export function LoginPage() {
     setBusy(true);
     setError(null);
     try {
-      const cid = companyId.trim() ? Number(companyId.trim()) : undefined;
-      await login({ phone: phone.trim(), password, companyId: cid });
+      await login({ phone: phone.trim(), password });
       nav("/", { replace: true });
     } catch (err: any) {
       const msg = typeof err?.message === "string" ? err.message : "Giriş başarısız";
@@ -37,25 +35,10 @@ export function LoginPage() {
     <div className="container">
       <div className="card card-pad" style={{ maxWidth: 520, margin: "0 auto" }}>
         <div className="h1">Giriş</div>
-        <div className="muted" style={{ marginBottom: 12 }}>
-          Telefon numaranız birden fazla firmada kayıtlıysa <b>company_id</b> girmeniz gerekir.
-        </div>
 
         {error ? <div className="error" style={{ marginBottom: 12 }}>{error}</div> : null}
 
         <form onSubmit={onSubmit}>
-          <div style={{ marginBottom: 10 }}>
-            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-              Company ID (opsiyonel)
-            </div>
-            <input
-              className="input"
-              inputMode="numeric"
-              placeholder="Örn: 1"
-              value={companyId}
-              onChange={(e) => setCompanyId(e.target.value)}
-            />
-          </div>
           <div style={{ marginBottom: 10 }}>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
               Telefon

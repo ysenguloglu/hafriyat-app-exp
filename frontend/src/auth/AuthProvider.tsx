@@ -11,7 +11,7 @@ type AuthState =
 type AuthContextValue = {
   state: AuthState;
   refresh: () => Promise<void>;
-  login: (params: { phone: string; password: string; companyId?: number }) => Promise<void>;
+  login: (params: { phone: string; password: string }) => Promise<void>;
   logout: () => void;
   role: Role | null;
 };
@@ -41,11 +41,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refresh]);
 
   const login = React.useCallback(
-    async (params: { phone: string; password: string; companyId?: number }) => {
+    async (params: { phone: string; password: string }) => {
       const token = await loginApi({
         phone: params.phone,
-        password: params.password,
-        company_id: params.companyId
+        password: params.password
       });
       setToken(token.access_token);
       await refresh();

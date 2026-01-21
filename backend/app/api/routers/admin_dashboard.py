@@ -28,7 +28,7 @@ def dashboard_summary(
     settings=Depends(get_company_settings),
 ) -> DashboardSummary:
     if start_date > end_date:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="start_date must be <= end_date")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Başlangıç tarihi bitiş tarihinden büyük olamaz")
 
     company_id = admin_user.company_id
     enable_income = bool(settings.enable_income_tracking) if settings else False

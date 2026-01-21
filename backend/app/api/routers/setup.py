@@ -29,12 +29,12 @@ def setup(request: SetupRequest, db: Session = Depends(get_db)) -> dict:
 
     # Token kontrolü
     if not settings.setup_token or request.setup_token != settings.setup_token:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid setup token")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Geçersiz kurulum token'ı")
 
     # Sadece hiç company yoksa çalışsın (güvenlik)
     existing = db.scalar(select(Company))
     if existing:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Setup already completed")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Kurulum zaten tamamlanmış")
 
     # Company oluştur
     company = Company(name=request.company_name.strip())

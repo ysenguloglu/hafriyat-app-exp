@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.api.deps import require_admin, require_advanced_reports
+from app.api.deps import get_company_settings, require_admin
 from app.db.session import get_db
 from app.models.expense import Expense
 from app.models.job import Job
@@ -23,7 +23,7 @@ router = APIRouter(prefix="/admin/reports", tags=["admin"])
 
 def _date_range_or_400(start_date: date, end_date: date) -> None:
     if start_date > end_date:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="start_date must be <= end_date")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Başlangıç tarihi bitiş tarihinden büyük olamaz")
 
 
 def _to_decimal(x: Any) -> Decimal:
@@ -33,7 +33,7 @@ def _to_decimal(x: Any) -> Decimal:
 def _validate_vehicle_id(db: Session, *, company_id: int, vehicle_id: int) -> None:
     exists = db.scalar(select(func.count()).select_from(Vehicle).where(Vehicle.id == vehicle_id, Vehicle.company_id == company_id))
     if not exists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid vehicle_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz araç ID")
 
 
 def _validate_driver_id(db: Session, *, company_id: int, driver_id: int) -> None:
@@ -47,7 +47,7 @@ def _validate_driver_id(db: Session, *, company_id: int, driver_id: int) -> None
         )
     )
     if not exists:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid driver_id")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Geçersiz şoför ID")
 
 
 @router.get("/vehicles", response_model=list[VehicleReportRow])
@@ -58,7 +58,7 @@ def report_vehicles(
     driver_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
     admin_user: User = Depends(require_admin),
-    settings=Depends(require_advanced_reports),
+    settings=Depends(get_company_settings),
 ) -> list[VehicleReportRow]:
     _date_range_or_400(start_date, end_date)
     company_id = admin_user.company_id
@@ -165,7 +165,7 @@ def report_drivers(
     vehicle_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
     admin_user: User = Depends(require_admin),
-    settings=Depends(require_advanced_reports),
+    settings=Depends(get_company_settings),
 ) -> list[DriverJobSummaryRow]:
     _date_range_or_400(start_date, end_date)
     company_id = admin_user.company_id
@@ -262,7 +262,7 @@ def report_time_series(
     driver_id: int | None = Query(default=None),
     db: Session = Depends(get_db),
     admin_user: User = Depends(require_admin),
-    settings=Depends(require_advanced_reports),
+    settings=Depends(get_company_settings),
 ) -> list[TimeSeriesRow]:
     _date_range_or_400(start_date, end_date)
     company_id = admin_user.company_id

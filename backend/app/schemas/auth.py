@@ -9,9 +9,6 @@ class Token(BaseModel):
 
 
 class LoginRequest(BaseModel):
-    # Multi-tenant: aynı telefon birden fazla firmada olabilir.
-    # company_id verilirse login kesinleşir; verilmezse ve birden fazla kayıt varsa hata döner.
-    company_id: int | None = None
     phone: str
     password: str
 
