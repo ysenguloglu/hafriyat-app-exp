@@ -30,6 +30,9 @@ class Settings(BaseSettings):
     jwt_algorithm: str = Field(default="HS256", alias="JWT_ALGORITHM")
     access_token_expire_minutes: int = Field(default=60 * 24 * 7, alias="ACCESS_TOKEN_EXPIRE_MINUTES")
 
+    # Setup (tek seferlik ilk admin oluşturma)
+    setup_token: str = Field(default="", alias="SETUP_TOKEN")
+
     @property
     def sqlalchemy_database_uri(self) -> str:
         if self.mysql_dsn:

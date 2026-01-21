@@ -6,4 +6,5 @@ __all__ = [
     "admin_dashboard",
     "admin_reports",
     "jobs",
+    "setup",
 ]
