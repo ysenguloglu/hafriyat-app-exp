@@ -110,9 +110,20 @@ def create_job(
         to_location=payload.to_location.strip(),
         trip_count=payload.trip_count,
         income_amount=payload.income_amount if enable_income else None,
+        fuel_amount=payload.fuel_amount,
+        odometer_start=payload.odometer_start,
+        odometer_end=payload.odometer_end,
         description=(payload.description.strip() if payload.description else None),
+        start_time=payload.start_time,
+        end_time=payload.end_time,
     )
     db.add(job)
+    
+    # Eğer bitiş kilometresi girildiyse, aracın mevcut kilometresini güncelle
+    if payload.odometer_end is not None:
+        vehicle.current_odometer = payload.odometer_end
+        db.add(vehicle)
+    
     db.commit()
     db.refresh(job)
     return _apply_income_visibility(job, enable_income_tracking=enable_income)
@@ -168,6 +179,23 @@ def update_job(
         job.trip_count = payload.trip_count
     if payload.description is not None:
         job.description = payload.description.strip() if payload.description else None
+    if payload.start_time is not None:
+        job.start_time = payload.start_time
+    if payload.end_time is not None:
+        job.end_time = payload.end_time
+    if payload.fuel_amount is not None:
+        job.fuel_amount = payload.fuel_amount
+    if payload.odometer_start is not None:
+        job.odometer_start = payload.odometer_start
+    if payload.odometer_end is not None:
+        job.odometer_end = payload.odometer_end
+        # Aracın mevcut kilometresini güncelle
+        vehicle = db.scalar(
+            select(Vehicle).where(Vehicle.id == job.vehicle_id, Vehicle.company_id == admin_user.company_id)
+        )
+        if vehicle:
+            vehicle.current_odometer = payload.odometer_end
+            db.add(vehicle)
 
     # income (izin varsa)
     if enable_income:

@@ -13,7 +13,12 @@ export function DriverNewJobPage() {
   const [toLocation, setToLocation] = React.useState("");
   const [tripCount, setTripCount] = React.useState("1");
   const [incomeAmount, setIncomeAmount] = React.useState("");
+  const [fuelAmount, setFuelAmount] = React.useState("");
+  const [odometerStart, setOdometerStart] = React.useState("");
+  const [odometerEnd, setOdometerEnd] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [startTime, setStartTime] = React.useState("");
+  const [endTime, setEndTime] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -42,7 +47,12 @@ export function DriverNewJobPage() {
         to_location: toLocation,
         trip_count: Number(tripCount),
         income_amount: incomeAmount.trim() ? Number(incomeAmount) : null,
-        description: description.trim() ? description : null
+        fuel_amount: fuelAmount.trim() ? Number(fuelAmount) : null,
+        odometer_start: odometerStart.trim() ? Number(odometerStart) : null,
+        odometer_end: odometerEnd.trim() ? Number(odometerEnd) : null,
+        description: description.trim() ? description : null,
+        start_time: startTime.trim() || null,
+        end_time: endTime.trim() || null
       });
       nav("/driver/jobs", { replace: true });
     } catch (e: any) {
@@ -123,6 +133,64 @@ export function DriverNewJobPage() {
               value={tripCount}
               onChange={(e) => setTripCount(e.target.value)}
               required
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Başlangıç Saati (opsiyonel)
+            </div>
+            <input
+              className="input"
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Bitiş Saati (opsiyonel)
+            </div>
+            <input
+              className="input"
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Yakıt Miktarı (litre, opsiyonel)
+            </div>
+            <input
+              className="input"
+              inputMode="decimal"
+              placeholder="0.00"
+              value={fuelAmount}
+              onChange={(e) => setFuelAmount(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Başlangıç Kilometre (opsiyonel)
+            </div>
+            <input
+              className="input"
+              inputMode="numeric"
+              placeholder="0"
+              value={odometerStart}
+              onChange={(e) => setOdometerStart(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Bitiş Kilometre (opsiyonel)
+            </div>
+            <input
+              className="input"
+              inputMode="numeric"
+              placeholder="0"
+              value={odometerEnd}
+              onChange={(e) => setOdometerEnd(e.target.value)}
             />
           </div>
           <div>

@@ -11,7 +11,12 @@ export type Job = {
   to_location: string;
   trip_count: number;
   income_amount: string | null;
+  fuel_amount: string | null;
+  odometer_start: number | null;
+  odometer_end: number | null;
   description: string | null;
+  start_time: string | null;
+  end_time: string | null;
 };
 
 export const driverApi = {

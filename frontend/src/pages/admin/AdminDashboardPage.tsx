@@ -86,7 +86,11 @@ export function AdminDashboardPage() {
         </div>
         <div className="card card-pad">
           <div className="muted">Toplam gider</div>
-          <div className="h1">{data?.total_expense ?? "-"}</div>
+          <div className="h1">
+            {data?.total_expense 
+              ? Number(data.total_expense).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })
+              : "-"}
+          </div>
         </div>
         <div className="card card-pad">
           <div className="muted">Aktif araç</div>
@@ -94,11 +98,44 @@ export function AdminDashboardPage() {
         </div>
         <div className="card card-pad">
           <div className="muted">Net kâr</div>
-          <div className="h1">{data?.net_profit ?? "—"}</div>
+          <div className="h1">
+            {data?.net_profit 
+              ? Number(data.net_profit).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })
+              : "—"}
+          </div>
           <div className="muted" style={{ fontSize: 12 }}>
-            {data?.total_income === null ? "Gelir takibi kapalı" : `Toplam gelir: ${data?.total_income ?? "-"}`}
+            {data?.total_income === null 
+              ? "Gelir takibi kapalı" 
+              : `Toplam gelir: ${Number(data.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}
           </div>
         </div>
+        {data?.total_work_hours !== null && data?.total_work_hours !== undefined ? (
+          <div className="card card-pad">
+            <div className="muted">Toplam çalışma süresi</div>
+            <div className="h1">
+              {Math.floor(data.total_work_hours)}sa {Math.round((data.total_work_hours % 1) * 60)}dk
+            </div>
+            <div className="muted" style={{ fontSize: 12 }}>
+              ({data.total_work_hours.toFixed(2)} saat)
+            </div>
+          </div>
+        ) : null}
+        {data?.total_fuel_amount ? (
+          <div className="card card-pad">
+            <div className="muted">Toplam yakıt</div>
+            <div className="h1">
+              {Number(data.total_fuel_amount).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} litre
+            </div>
+          </div>
+        ) : null}
+        {data?.total_distance_km ? (
+          <div className="card card-pad">
+            <div className="muted">Toplam kilometre</div>
+            <div className="h1">
+              {data.total_distance_km.toLocaleString("tr-TR")} km
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

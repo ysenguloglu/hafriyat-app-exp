@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, time
 from decimal import Decimal
 
-from sqlalchemy import BigInteger, Date, ForeignKey, Integer, Numeric, String, Text, Index
+from sqlalchemy import BigInteger, Date, ForeignKey, Integer, Numeric, String, Text, Index, Time
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
@@ -21,6 +21,10 @@ class Job(Base, CompanyScopedMixin, TimestampMixin):
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
 
     date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+
+    # İş saatleri (opsiyonel)
+    start_time: Mapped[time | None] = mapped_column(Time, nullable=True)
+    end_time: Mapped[time | None] = mapped_column(Time, nullable=True)
 
     vehicle_id: Mapped[int] = mapped_column(
         BigInteger,
@@ -42,6 +46,13 @@ class Job(Base, CompanyScopedMixin, TimestampMixin):
 
     # Her iş kaydında gelir olabilir; feature flag ile görünürlük kontrol edilecek (ileriki adım).
     income_amount: Mapped[Decimal | None] = mapped_column(Numeric(12, 2), nullable=True)
+
+    # Yakıt miktarı (litre cinsinden)
+    fuel_amount: Mapped[Decimal | None] = mapped_column(Numeric(10, 2), nullable=True)
+
+    # Kilometre takibi (opsiyonel)
+    odometer_start: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    odometer_end: Mapped[int | None] = mapped_column(Integer, nullable=True)
 
     description: Mapped[str | None] = mapped_column(Text, nullable=True)
 

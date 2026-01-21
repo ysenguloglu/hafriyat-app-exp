@@ -1,6 +1,6 @@
 import { apiFetch } from "../../api/client";
 
-export type Vehicle = { id: number; plate: string; vehicle_type: string; is_active: boolean };
+export type Vehicle = { id: number; plate: string; vehicle_type: string; is_active: boolean; current_odometer: number | null };
 export type Driver = { id: number; company_id: number; name: string; phone: string; role: "driver"; is_active: boolean };
 export type Job = {
   id: number;
@@ -13,7 +13,12 @@ export type Job = {
   to_location: string;
   trip_count: number;
   income_amount: string | null;
+  fuel_amount: string | null;
+  odometer_start: number | null;
+  odometer_end: number | null;
   description: string | null;
+  start_time: string | null;
+  end_time: string | null;
 };
 export type Expense = {
   id: number;
@@ -31,6 +36,9 @@ export type Dashboard = {
   total_expense: string;
   net_profit: string | null;
   active_vehicle_count: number;
+  total_work_hours: number | null;
+  total_fuel_amount: string | null;
+  total_distance_km: number | null;
 };
 
 export type VehicleReportRow = {

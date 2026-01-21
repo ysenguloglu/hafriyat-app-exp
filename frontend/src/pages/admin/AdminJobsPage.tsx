@@ -14,7 +14,12 @@ export function AdminJobsPage() {
   const [toLocation, setToLocation] = React.useState("");
   const [tripCount, setTripCount] = React.useState("1");
   const [incomeAmount, setIncomeAmount] = React.useState("");
+  const [fuelAmount, setFuelAmount] = React.useState("");
+  const [odometerStart, setOdometerStart] = React.useState("");
+  const [odometerEnd, setOdometerEnd] = React.useState("");
   const [description, setDescription] = React.useState("");
+  const [startTime, setStartTime] = React.useState("");
+  const [endTime, setEndTime] = React.useState("");
   const [editingId, setEditingId] = React.useState<number | null>(null);
   const [editDate, setEditDate] = React.useState("");
   const [editVehicleId, setEditVehicleId] = React.useState("");
@@ -24,7 +29,12 @@ export function AdminJobsPage() {
   const [editToLocation, setEditToLocation] = React.useState("");
   const [editTripCount, setEditTripCount] = React.useState("1");
   const [editIncomeAmount, setEditIncomeAmount] = React.useState("");
+  const [editFuelAmount, setEditFuelAmount] = React.useState("");
+  const [editOdometerStart, setEditOdometerStart] = React.useState("");
+  const [editOdometerEnd, setEditOdometerEnd] = React.useState("");
   const [editDescription, setEditDescription] = React.useState("");
+  const [editStartTime, setEditStartTime] = React.useState("");
+  const [editEndTime, setEditEndTime] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -78,7 +88,12 @@ export function AdminJobsPage() {
         to_location: toLocation,
         trip_count: Number(tripCount),
         income_amount: incomeAmount.trim() ? Number(incomeAmount) : null,
-        description: description.trim() ? description : null
+        fuel_amount: fuelAmount.trim() ? Number(fuelAmount) : null,
+        odometer_start: odometerStart.trim() ? Number(odometerStart) : null,
+        odometer_end: odometerEnd.trim() ? Number(odometerEnd) : null,
+        description: description.trim() ? description : null,
+        start_time: startTime.trim() || null,
+        end_time: endTime.trim() || null
       });
       setDate("");
       setVehicleId("");
@@ -88,7 +103,12 @@ export function AdminJobsPage() {
       setToLocation("");
       setTripCount("1");
       setIncomeAmount("");
+      setFuelAmount("");
+      setOdometerStart("");
+      setOdometerEnd("");
       setDescription("");
+      setStartTime("");
+      setEndTime("");
       await loadJobs();
     } catch (e: any) {
       setError(e?.message ?? "İş kaydı oluşturulamadı");
@@ -107,7 +127,12 @@ export function AdminJobsPage() {
     setEditToLocation(j.to_location);
     setEditTripCount(String(j.trip_count));
     setEditIncomeAmount(j.income_amount || "");
+    setEditFuelAmount(j.fuel_amount || "");
+    setEditOdometerStart(j.odometer_start ? String(j.odometer_start) : "");
+    setEditOdometerEnd(j.odometer_end ? String(j.odometer_end) : "");
     setEditDescription(j.description || "");
+    setEditStartTime(j.start_time || "");
+    setEditEndTime(j.end_time || "");
   };
 
   const cancelEdit = () => {
@@ -120,7 +145,12 @@ export function AdminJobsPage() {
     setEditToLocation("");
     setEditTripCount("1");
     setEditIncomeAmount("");
+    setEditFuelAmount("");
+    setEditOdometerStart("");
+    setEditOdometerEnd("");
     setEditDescription("");
+    setEditStartTime("");
+    setEditEndTime("");
   };
 
   const saveEdit = async () => {
@@ -137,7 +167,12 @@ export function AdminJobsPage() {
         to_location: editToLocation,
         trip_count: Number(editTripCount),
         income_amount: editIncomeAmount.trim() ? Number(editIncomeAmount) : null,
-        description: editDescription.trim() ? editDescription : null
+        fuel_amount: editFuelAmount.trim() ? Number(editFuelAmount) : null,
+        odometer_start: editOdometerStart.trim() ? Number(editOdometerStart) : null,
+        odometer_end: editOdometerEnd.trim() ? Number(editOdometerEnd) : null,
+        description: editDescription.trim() ? editDescription : null,
+        start_time: editStartTime.trim() || null,
+        end_time: editEndTime.trim() || null
       });
       cancelEdit();
       await loadJobs();
@@ -273,6 +308,24 @@ export function AdminJobsPage() {
             />
           </div>
           <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Başlangıç Saati (opsiyonel)</div>
+            <input
+              className="input"
+              type="time"
+              value={startTime}
+              onChange={(e) => setStartTime(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Bitiş Saati (opsiyonel)</div>
+            <input
+              className="input"
+              type="time"
+              value={endTime}
+              onChange={(e) => setEndTime(e.target.value)}
+            />
+          </div>
+          <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Gelir (opsiyonel)</div>
             <input
               className="input"
@@ -280,6 +333,36 @@ export function AdminJobsPage() {
               placeholder="0.00"
               value={incomeAmount}
               onChange={(e) => setIncomeAmount(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Yakıt Miktarı (litre, opsiyonel)</div>
+            <input
+              className="input"
+              inputMode="decimal"
+              placeholder="0.00"
+              value={fuelAmount}
+              onChange={(e) => setFuelAmount(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Başlangıç Kilometre (opsiyonel)</div>
+            <input
+              className="input"
+              inputMode="numeric"
+              placeholder="0"
+              value={odometerStart}
+              onChange={(e) => setOdometerStart(e.target.value)}
+            />
+          </div>
+          <div>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Bitiş Kilometre (opsiyonel)</div>
+            <input
+              className="input"
+              inputMode="numeric"
+              placeholder="0"
+              value={odometerEnd}
+              onChange={(e) => setOdometerEnd(e.target.value)}
             />
           </div>
           <div>
@@ -421,6 +504,24 @@ export function AdminJobsPage() {
                       />
                     </div>
                     <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Başlangıç Saati (opsiyonel)</div>
+                      <input
+                        className="input"
+                        type="time"
+                        value={editStartTime}
+                        onChange={(e) => setEditStartTime(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Bitiş Saati (opsiyonel)</div>
+                      <input
+                        className="input"
+                        type="time"
+                        value={editEndTime}
+                        onChange={(e) => setEditEndTime(e.target.value)}
+                      />
+                    </div>
+                    <div>
                       <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Gelir (opsiyonel)</div>
                       <input
                         className="input"
@@ -428,6 +529,36 @@ export function AdminJobsPage() {
                         placeholder="0.00"
                         value={editIncomeAmount}
                         onChange={(e) => setEditIncomeAmount(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Yakıt Miktarı (litre, opsiyonel)</div>
+                      <input
+                        className="input"
+                        inputMode="decimal"
+                        placeholder="0.00"
+                        value={editFuelAmount}
+                        onChange={(e) => setEditFuelAmount(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Başlangıç Kilometre (opsiyonel)</div>
+                      <input
+                        className="input"
+                        inputMode="numeric"
+                        placeholder="0"
+                        value={editOdometerStart}
+                        onChange={(e) => setEditOdometerStart(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>Bitiş Kilometre (opsiyonel)</div>
+                      <input
+                        className="input"
+                        inputMode="numeric"
+                        placeholder="0"
+                        value={editOdometerEnd}
+                        onChange={(e) => setEditOdometerEnd(e.target.value)}
                       />
                     </div>
                     <div>
@@ -456,6 +587,23 @@ export function AdminJobsPage() {
               );
             }
             
+            // Çalışma süresini hesapla
+            let workDuration = null;
+            if (j.start_time && j.end_time) {
+              const start = new Date(`2000-01-01T${j.start_time}`);
+              const end = new Date(`2000-01-01T${j.end_time}`);
+              if (end < start) {
+                // Gece yarısını geçmişse
+                end.setDate(end.getDate() + 1);
+              }
+              const diffMs = end.getTime() - start.getTime();
+              const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+              const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+              if (diffHours > 0 || diffMinutes > 0) {
+                workDuration = `${diffHours}sa ${diffMinutes}dk`;
+              }
+            }
+
             return (
               <div key={j.id} className="card card-pad">
                 <div className="row">
@@ -469,11 +617,35 @@ export function AdminJobsPage() {
                     <div className="muted">
                       {vehicle ? `${vehicle.plate} - ${vehicle.vehicle_type}` : `Araç: ${j.vehicle_id}`} • {driver ? driver.name : `Şoför: ${j.driver_id}`}
                     </div>
+                    {j.start_time && j.end_time ? (
+                      <div className="muted">
+                        Saat: {j.start_time} - {j.end_time} {workDuration ? `• Çalışma Süresi: ${workDuration}` : ""}
+                      </div>
+                    ) : null}
+                    {j.fuel_amount ? (
+                      <div className="muted">
+                        Yakıt: {Number(j.fuel_amount).toLocaleString("tr-TR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })} litre
+                      </div>
+                    ) : null}
+                    {j.odometer_start && j.odometer_end ? (
+                      <div className="muted">
+                        Kilometre: {j.odometer_start.toLocaleString("tr-TR")} - {j.odometer_end.toLocaleString("tr-TR")} km 
+                        ({((j.odometer_end - j.odometer_start)).toLocaleString("tr-TR")} km)
+                      </div>
+                    ) : j.odometer_end ? (
+                      <div className="muted">
+                        Bitiş Kilometre: {j.odometer_end.toLocaleString("tr-TR")} km
+                      </div>
+                    ) : null}
                     {j.description ? <div className="muted">{j.description}</div> : null}
                   </div>
                   <div className="spacer" />
                   <div style={{ display: "flex", flexDirection: "column", gap: 8, alignItems: "flex-end" }}>
-                    <div className="muted">{j.income_amount === null ? "Gelir: —" : `Gelir: ${Number(j.income_amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}</div>
+                    <div className="muted">
+                      {j.income_amount === null 
+                        ? "Gelir: —" 
+                        : `Gelir: ${Number(j.income_amount).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}
+                    </div>
                     <button className="btn" onClick={() => startEdit(j)} disabled={busy}>
                       Düzenle
                     </button>

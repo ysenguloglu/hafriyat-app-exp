@@ -39,6 +39,7 @@ def create_vehicle(
         plate=payload.plate.strip(),
         vehicle_type=payload.vehicle_type.strip(),
         is_active=True,
+        current_odometer=payload.current_odometer,
     )
     db.add(vehicle)
     try:
@@ -83,6 +84,8 @@ def update_vehicle(
         vehicle.vehicle_type = payload.vehicle_type.strip()
     if payload.is_active is not None:
         vehicle.is_active = payload.is_active
+    if payload.current_odometer is not None:
+        vehicle.current_odometer = payload.current_odometer
 
     try:
         db.commit()

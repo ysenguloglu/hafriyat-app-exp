@@ -5,9 +5,11 @@ export function AdminVehiclesPage() {
   const [items, setItems] = React.useState<Vehicle[]>([]);
   const [plate, setPlate] = React.useState("");
   const [vehicleType, setVehicleType] = React.useState("");
+  const [currentOdometer, setCurrentOdometer] = React.useState("");
   const [editingId, setEditingId] = React.useState<number | null>(null);
   const [editPlate, setEditPlate] = React.useState("");
   const [editVehicleType, setEditVehicleType] = React.useState("");
+  const [editCurrentOdometer, setEditCurrentOdometer] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
 
@@ -32,9 +34,14 @@ export function AdminVehiclesPage() {
     setBusy(true);
     setError(null);
     try {
-      await adminApi.vehicles.create({ plate, vehicle_type: vehicleType });
+      await adminApi.vehicles.create({ 
+        plate, 
+        vehicle_type: vehicleType,
+        current_odometer: currentOdometer.trim() ? Number(currentOdometer) : null
+      });
       setPlate("");
       setVehicleType("");
+      setCurrentOdometer("");
       await load();
     } catch (e: any) {
       setError(e?.message ?? "Araç eklenemedi");
@@ -47,12 +54,14 @@ export function AdminVehiclesPage() {
     setEditingId(v.id);
     setEditPlate(v.plate);
     setEditVehicleType(v.vehicle_type);
+    setEditCurrentOdometer(v.current_odometer ? String(v.current_odometer) : "");
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditPlate("");
     setEditVehicleType("");
+    setEditCurrentOdometer("");
   };
 
   const saveEdit = async () => {
@@ -62,7 +71,8 @@ export function AdminVehiclesPage() {
     try {
       await adminApi.vehicles.update(editingId, {
         plate: editPlate,
-        vehicle_type: editVehicleType
+        vehicle_type: editVehicleType,
+        current_odometer: editCurrentOdometer.trim() ? Number(editCurrentOdometer) : null,
       });
       cancelEdit();
       await load();
@@ -118,6 +128,14 @@ export function AdminVehiclesPage() {
             }} 
             required 
           />
+          <input 
+            className="input" 
+            style={{ flex: 1, minWidth: 120 }} 
+            inputMode="numeric"
+            placeholder="Kilometre (opsiyonel)" 
+            value={currentOdometer} 
+            onChange={(e) => setCurrentOdometer(e.target.value)}
+          />
           <button className="btn btn-primary" type="submit" disabled={busy}>
             Ekle
           </button>
@@ -161,6 +179,13 @@ export function AdminVehiclesPage() {
                         setEditVehicleType(titleCase);
                       }}
                     />
+                    <input
+                      className="input"
+                      inputMode="numeric"
+                      placeholder="Kilometre (opsiyonel)"
+                      value={editCurrentOdometer}
+                      onChange={(e) => setEditCurrentOdometer(e.target.value)}
+                    />
                   </div>
                   <button className="btn btn-primary" onClick={saveEdit} disabled={busy}>
                     Kaydet
@@ -171,6 +196,11 @@ export function AdminVehiclesPage() {
                   <div>
                     <div className="h2">{v.plate}</div>
                     <div className="muted">{v.vehicle_type}</div>
+                    {v.current_odometer !== null ? (
+                      <div className="muted" style={{ fontSize: 12, marginTop: 4 }}>
+                        Mevcut Kilometre: {v.current_odometer.toLocaleString("tr-TR")} km
+                      </div>
+                    ) : null}
                   </div>
                   <div className="spacer" />
                   <div style={{ display: "flex", gap: 8, alignItems: "center" }}>

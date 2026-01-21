@@ -1,6 +1,18 @@
--- Hafriyat Firma Takip Uygulaması - MySQL Şeması
--- Not: Multi-tenant izolasyonu için tüm tablolarda company_id vardır.
+-- Veritabanını sıfırdan oluşturma scripti
+-- Tüm tabloları drop edip yeniden oluşturur
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+DROP TABLE IF EXISTS expenses;
+DROP TABLE IF EXISTS jobs;
+DROP TABLE IF EXISTS vehicles;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS company_settings;
+DROP TABLE IF EXISTS companies;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Şimdi schema.sql içeriği
 SET NAMES utf8mb4;
 SET time_zone = '+00:00';
 
@@ -116,7 +128,6 @@ CREATE TABLE IF NOT EXISTS expenses (
   KEY ix_expenses_date (date),
   KEY ix_expenses_vehicle_id (vehicle_id),
   KEY ix_expenses_company_date (company_id, date),
-  KEY ix_expenses_company_vehicle_date (company_id, vehicle_id, date),
   CONSTRAINT fk_expenses_company
     FOREIGN KEY (company_id) REFERENCES companies(id)
     ON DELETE RESTRICT ON UPDATE RESTRICT,
