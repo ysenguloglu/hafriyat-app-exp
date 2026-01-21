@@ -27,7 +27,10 @@ export function AdminDashboardPage() {
       const d = await adminApi.dashboard(range);
       setData(d);
     } catch (e: any) {
-      setError(e?.message ?? "Dashboard yüklenemedi");
+      console.error("Dashboard yükleme hatası:", e);
+      const errorMsg = e?.message ?? "Dashboard yüklenemedi";
+      setError(errorMsg);
+      setData(null); // Hata durumunda data'yı temizle
     } finally {
       setBusy(false);
     }
@@ -49,7 +52,11 @@ export function AdminDashboardPage() {
           {busy ? "Yükleniyor…" : "Yenile"}
         </button>
         <div className="spacer" />
-        {error ? <div className="muted">{error}</div> : null}
+        {error ? (
+          <div className="error" style={{ padding: "8px 12px", borderRadius: 4 }}>
+            {error}
+          </div>
+        ) : null}
       </div>
 
       <div style={{ height: 12 }} />
@@ -79,7 +86,14 @@ export function AdminDashboardPage() {
 
       <div style={{ height: 12 }} />
 
-      <div className="grid grid-2">
+      {busy && !data ? (
+        <div className="card card-pad" style={{ textAlign: "center" }}>
+          <div className="muted">Yükleniyor…</div>
+        </div>
+      ) : null}
+
+      {!busy && data && (
+        <div className="grid grid-2">
         <div className="card card-pad">
           <div className="muted">Toplam sefer sayısı</div>
           <div className="h1">{data?.total_trip_count ?? "-"}</div>
@@ -106,10 +120,12 @@ export function AdminDashboardPage() {
           <div className="muted" style={{ fontSize: 12 }}>
             {data?.total_income === null 
               ? "Gelir takibi kapalı" 
-              : `Toplam gelir: ${Number(data.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`}
+              : data?.total_income != null
+              ? `Toplam gelir: ${Number(data.total_income).toLocaleString("tr-TR", { style: "currency", currency: "TRY" })}`
+              : null}
           </div>
         </div>
-        {data?.total_work_hours !== null && data?.total_work_hours !== undefined ? (
+        {data?.total_work_hours != null ? (
           <div className="card card-pad">
             <div className="muted">Toplam çalışma süresi</div>
             <div className="h1">
@@ -120,7 +136,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
         ) : null}
-        {data?.total_fuel_amount ? (
+        {data?.total_fuel_amount != null ? (
           <div className="card card-pad">
             <div className="muted">Toplam yakıt</div>
             <div className="h1">
@@ -128,7 +144,7 @@ export function AdminDashboardPage() {
             </div>
           </div>
         ) : null}
-        {data?.total_distance_km ? (
+        {data?.total_distance_km != null ? (
           <div className="card card-pad">
             <div className="muted">Toplam kilometre</div>
             <div className="h1">
@@ -136,7 +152,14 @@ export function AdminDashboardPage() {
             </div>
           </div>
         ) : null}
-      </div>
+        </div>
+      )}
+
+      {!busy && !data && !error ? (
+        <div className="card card-pad" style={{ textAlign: "center" }}>
+          <div className="muted">Veri yüklenemedi. Lütfen yenileyin.</div>
+        </div>
+      ) : null}
     </div>
   );
 }
