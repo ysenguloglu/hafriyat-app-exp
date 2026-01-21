@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "sirv dist -s -l ${PORT:-4173}"
+    "start": "sirv dist -s --host 0.0.0.0 --port ${PORT:-4173}"
   },
   "dependencies": {
     "react": "^18.3.1",

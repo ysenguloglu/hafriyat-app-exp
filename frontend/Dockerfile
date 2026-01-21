@@ -9,5 +9,6 @@ COPY . .
 RUN npm run build
 
 EXPOSE 4173
+ENV PORT=4173
 CMD ["sh", "-c", "npm run start"]
 
