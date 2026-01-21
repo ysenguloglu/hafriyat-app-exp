@@ -110,7 +110,7 @@ export function App() {
             ) : role === "driver" ? (
               <Navigate to="/driver/jobs" replace />
             ) : (
-              <Navigate to="/login" replace />
+              <Navigate to="/signup" replace />
             )
           }
         />
