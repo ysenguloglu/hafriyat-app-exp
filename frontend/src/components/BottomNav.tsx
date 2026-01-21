@@ -7,7 +7,7 @@ export function BottomNav({ role }: { role: Role }) {
       <div className="bottom-nav">
         <div className="bottom-nav-inner">
           <NavLink className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`} to="/admin/dashboard">
-            Dashboard
+            Özet
           </NavLink>
           <NavLink className={({ isActive }) => `nav-item ${isActive ? "active" : ""}`} to="/admin/jobs">
             İşler

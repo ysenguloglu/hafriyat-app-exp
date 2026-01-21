@@ -1,0 +1,111 @@
+import React from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "../auth/AuthProvider";
+
+export function SignupPage() {
+  const { state, signup } = useAuth();
+  const nav = useNavigate();
+  const [companyName, setCompanyName] = React.useState("");
+  const [adminName, setAdminName] = React.useState("");
+  const [adminPhone, setAdminPhone] = React.useState("");
+  const [adminPassword, setAdminPassword] = React.useState("");
+  const [error, setError] = React.useState<string | null>(null);
+  const [busy, setBusy] = React.useState(false);
+
+  React.useEffect(() => {
+    if (state.status === "authed") {
+      nav("/", { replace: true });
+    }
+  }, [state.status, nav]);
+
+  const onSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setError(null);
+    try {
+      await signup({
+        company_name: companyName.trim(),
+        admin_name: adminName.trim(),
+        admin_phone: adminPhone.trim(),
+        admin_password: adminPassword
+      });
+      nav("/", { replace: true });
+    } catch (err: any) {
+      const msg = typeof err?.message === "string" ? err.message : "Kayıt başarısız";
+      setError(msg);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className="container">
+      <div className="card card-pad" style={{ maxWidth: 520, margin: "0 auto" }}>
+        <div className="h1">Kayıt Ol</div>
+
+        {error ? <div className="error" style={{ marginBottom: 12 }}>{error}</div> : null}
+
+        <form onSubmit={onSubmit}>
+          <div style={{ marginBottom: 10 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Firma Adı
+            </div>
+            <input
+              className="input"
+              placeholder="Firma adınız"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
+              required
+            />
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Adınız
+            </div>
+            <input
+              className="input"
+              placeholder="Adınız"
+              value={adminName}
+              onChange={(e) => setAdminName(e.target.value)}
+              required
+            />
+          </div>
+          <div style={{ marginBottom: 10 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Telefon
+            </div>
+            <input
+              className="input"
+              inputMode="tel"
+              placeholder="05xx..."
+              value={adminPhone}
+              onChange={(e) => setAdminPhone(e.target.value)}
+              required
+            />
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
+              Şifre
+            </div>
+            <input
+              className="input"
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button className="btn btn-primary" type="submit" disabled={busy} style={{ width: "100%" }}>
+            {busy ? "Kayıt yapılıyor…" : "Kayıt Ol"}
+          </button>
+        </form>
+
+        <div style={{ marginTop: 14, textAlign: "center" }}>
+          <Link to="/login" style={{ color: "var(--color-primary)", textDecoration: "none" }}>
+            Zaten hesabınız var mı? Giriş yapın
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}

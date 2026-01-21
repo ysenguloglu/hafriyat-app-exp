@@ -1,6 +1,19 @@
 import { apiFetch } from "../api/client";
 import type { CurrentUser, TokenResponse } from "./types";
 
+export async function signup(params: {
+  company_name: string;
+  admin_name: string;
+  admin_phone: string;
+  admin_password: string;
+}): Promise<TokenResponse> {
+  return apiFetch<TokenResponse>("/auth/signup", {
+    method: "POST",
+    auth: false,
+    body: JSON.stringify(params)
+  });
+}
+
 export async function login(params: {
   phone: string;
   password: string;

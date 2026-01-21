@@ -38,7 +38,7 @@ export function AdminDashboardPage() {
 
   return (
     <div className="container">
-      <div className="h1">Admin Dashboard</div>
+      <div className="h1">Özet</div>
       <DateRangeBar value={range} onChange={setRange} />
 
       <div style={{ height: 12 }} />

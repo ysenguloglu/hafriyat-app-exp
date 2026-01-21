@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
 
 export function LoginPage() {
@@ -68,6 +68,12 @@ export function LoginPage() {
             {busy ? "Giriş yapılıyor…" : "Giriş yap"}
           </button>
         </form>
+
+        <div style={{ marginTop: 14, textAlign: "center" }}>
+          <Link to="/signup" style={{ color: "var(--color-primary)", textDecoration: "none" }}>
+            Hesabınız yok mu? Kayıt olun
+          </Link>
+        </div>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { clearToken, getToken, setToken } from "./token";
 import type { CurrentUser, Role } from "./types";
-import { login as loginApi, me as meApi } from "./authApi";
+import { login as loginApi, me as meApi, signup as signupApi } from "./authApi";
 
 type AuthState =
   | { status: "loading" }
@@ -11,6 +11,7 @@ type AuthState =
 type AuthContextValue = {
   state: AuthState;
   refresh: () => Promise<void>;
+  signup: (params: { company_name: string; admin_name: string; admin_phone: string; admin_password: string }) => Promise<void>;
   login: (params: { phone: string; password: string }) => Promise<void>;
   logout: () => void;
   role: Role | null;
@@ -40,6 +41,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     void refresh();
   }, [refresh]);
 
+  const signup = React.useCallback(
+    async (params: { company_name: string; admin_name: string; admin_phone: string; admin_password: string }) => {
+      const token = await signupApi(params);
+      setToken(token.access_token);
+      await refresh();
+    },
+    [refresh]
+  );
+
   const login = React.useCallback(
     async (params: { phone: string; password: string }) => {
       const token = await loginApi({
@@ -59,7 +69,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const role = state.status === "authed" ? state.user.role : null;
 
-  const value: AuthContextValue = { state, refresh, login, logout, role };
+  const value: AuthContextValue = { state, refresh, signup, login, logout, role };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 

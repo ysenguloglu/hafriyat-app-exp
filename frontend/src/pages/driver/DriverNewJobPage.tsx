@@ -1,9 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { driverApi } from "./api";
+import { adminApi, type Vehicle } from "../admin/api";
 
 export function DriverNewJobPage() {
   const nav = useNavigate();
+  const [vehicles, setVehicles] = React.useState<Vehicle[]>([]);
   const [date, setDate] = React.useState("");
   const [vehicleId, setVehicleId] = React.useState("");
   const [jobType, setJobType] = React.useState("");
@@ -14,6 +16,18 @@ export function DriverNewJobPage() {
   const [description, setDescription] = React.useState("");
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
+
+  React.useEffect(() => {
+    const loadVehicles = async () => {
+      try {
+        const vs = await adminApi.vehicles.list();
+        setVehicles(vs.filter(v => v.is_active));
+      } catch (e: any) {
+        setError(e?.message ?? "Araçlar yüklenemedi");
+      }
+    };
+    void loadVehicles();
+  }, []);
 
   const create = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,16 +74,19 @@ export function DriverNewJobPage() {
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>
-              Vehicle ID
+              Araç
             </div>
-            <input
+            <select
               className="input"
-              inputMode="numeric"
-              placeholder="Örn: 12"
               value={vehicleId}
               onChange={(e) => setVehicleId(e.target.value)}
               required
-            />
+            >
+              <option value="">Seçiniz...</option>
+              {vehicles.map(v => (
+                <option key={v.id} value={v.id}>{v.plate} - {v.vehicle_type}</option>
+              ))}
+            </select>
           </div>
           <div>
             <div className="muted" style={{ fontSize: 12, marginBottom: 6 }}>

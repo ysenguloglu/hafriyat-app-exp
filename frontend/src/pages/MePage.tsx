@@ -23,10 +23,10 @@ export function MePage() {
           </div>
           <div className="card card-pad">
             <div className="muted">Rol</div>
-            <div>{state.user.role}</div>
+            <div>{state.user.role === "admin" ? "Yönetici" : "Şoför"}</div>
           </div>
           <div className="card card-pad">
-            <div className="muted">Company</div>
+            <div className="muted">Firma ID</div>
             <div>{state.user.company_id}</div>
           </div>
         </div>

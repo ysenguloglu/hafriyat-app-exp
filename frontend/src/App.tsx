@@ -4,6 +4,7 @@ import { useAuth } from "./auth/AuthProvider";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { BottomNav } from "./components/BottomNav";
 import { LoginPage } from "./pages/LoginPage";
+import { SignupPage } from "./pages/SignupPage";
 import { MePage } from "./pages/MePage";
 import { AdminDashboardPage } from "./pages/admin/AdminDashboardPage";
 import { AdminVehiclesPage } from "./pages/admin/AdminVehiclesPage";
@@ -22,6 +23,7 @@ export function App() {
     <>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
 
         <Route
           path="/me"
