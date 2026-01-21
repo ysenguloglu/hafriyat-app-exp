@@ -36,7 +36,11 @@ class Settings(BaseSettings):
     @property
     def sqlalchemy_database_uri(self) -> str:
         if self.mysql_dsn:
-            return self.mysql_dsn
+            # Eğer mysql:// ile başlıyorsa mysql+pymysql:// yap
+            dsn = self.mysql_dsn
+            if dsn.startswith("mysql://"):
+                dsn = dsn.replace("mysql://", "mysql+pymysql://", 1)
+            return dsn
         return (
             f"mysql+pymysql://{self.mysql_user}:{self.mysql_password}"
             f"@{self.mysql_host}:{self.mysql_port}/{self.mysql_database}"
