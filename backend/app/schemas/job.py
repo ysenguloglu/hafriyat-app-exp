@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date as Date
 from decimal import Decimal
 
 from pydantic import BaseModel, Field
 
 
 class JobBase(BaseModel):
-    date: date
+    date: Date
     vehicle_id: int
     job_type: str = Field(min_length=1, max_length=50)
     from_location: str = Field(min_length=1, max_length=200)
@@ -23,7 +23,7 @@ class JobCreate(JobBase):
 
 
 class JobUpdate(BaseModel):
-    date: date | None = None
+    date: Date | None = None
     vehicle_id: int | None = None
     driver_id: int | None = None
     job_type: str | None = Field(default=None, min_length=1, max_length=50)
